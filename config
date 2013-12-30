@@ -24,7 +24,7 @@
 # name = sourcefile
 #   each sourcefile may have setup, loop and destroy functions and macros
 #myscript = /home/pi/webiopi/examples/scripts/macros/script.py
-garage = /home/pi/garage/python/garage.py
+garagepi = /home/pi/garagepi/python/garagepi.py
 
 #------------------------------------------------------------------------#
 
@@ -38,7 +38,7 @@ port = 8000
 passwd-file = /etc/webiopi/passwd
 
 # Use doc-root to change default HTML and resource files location
-doc-root = /home/pi/garage/html
+doc-root = /home/pi/garagepi/html
 
 # Use welcome-file to change the default "Welcome" file
 #welcome-file = index.html
