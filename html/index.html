@@ -9,6 +9,7 @@
 
    <title>Garage Door Opener</title>
    <script type="text/javascript" src="/webiopi.js"></script>
+   <script type="text/javascript" src="/jquery-2.1.1.min.js"></script>
    <script type="text/javascript">
         webiopi().ready(function() {
 
@@ -30,6 +31,56 @@
             webiopi().refreshGPIO(true);
 
         });
+
+        /* fix vertical when not overflow call fullscreenFix() if .fullscreen content changes */
+        function fullscreenFix(){
+            var h = $('body').height();
+            // set .fullscreen height
+            $(".content-b").each(function(i){
+                if($(this).innerHeight() <= h){
+                    $(this).closest(".fullscreen").addClass("not-overflow");
+                }
+            });
+        }
+        $(window).resize(fullscreenFix);
+        fullscreenFix();
+
+        /* resize background images */
+        function backgroundResize(){
+            var windowH = $(window).height();
+            $(".background").each(function(i){
+                var path = $(this);
+                // variables
+                var contW = path.width();
+                var contH = path.height();
+                var imgW = path.attr("data-img-width");
+                var imgH = path.attr("data-img-height");
+                var ratio = imgW / imgH;
+                // overflowing difference
+                var diff = parseFloat(path.attr("data-diff"));
+                diff = diff ? diff : 0;
+                // remaining height to have fullscreen image only on parallax
+                var remainingH = 0;
+                if(path.hasClass("parallax")){
+                    var maxH = contH > windowH ? contH : windowH;
+                    remainingH = windowH - contH;
+                }
+                // set img values depending on cont
+                imgH = contH + remainingH + diff;
+                imgW = imgH * ratio;
+                // fix when too large
+                if(contW > imgW){
+                    imgW = contW;
+                    imgH = imgW / ratio;
+                }
+                path.data("resized-imgW", imgW);
+                path.data("resized-imgH", imgH);
+                path.css("background-size", imgW + "px " + imgH + "px");
+            });
+        }
+        $(window).resize(backgroundResize);
+        $(window).focus(backgroundResize);
+        $(window).load(backgroundResize);
 
     </script>
     <style type="text/css">
@@ -54,10 +105,50 @@
         #gpio4.HIGH {
             background-color: Blue;
         }
+
+        /* background setup */
+        .background {
+            background-repeat:no-repeat;
+            /* custom background-position */
+            background-position:50% 50%;
+            /* ie8- graceful degradation */
+            background-position:50% 50%9 !important;
+        }
+
+        html, body {
+            /* give this to all tags from html to .fullscreen */
+            height:100%;
+        }
+        .fullscreen,
+        .content-a {
+            width:100%;
+            min-height:100%;
+        }
+        .not-fullscreen,
+        .not-fullscreen .content-a,
+        .fullscreen.not-overflow,
+        .fullscreen.not-overflow .content-a {
+            height:100%;
+            overflow:hidden;
+        }
+
+        /* content centering styles */
+        .content-a {
+            display:table;
+        }
+        .content-b {
+            display:table-cell;
+            position:relative;
+            vertical-align:middle;
+            text-align:center;
+        }
     </style>
 </head>
 <body>
-    <div id="controls" align="center"></div>
+    <div class="fullscreen background" style="background-image:url('/garage.jpg');" data-img-width="640" data-img-height="640">
+        <div id="controls" align="center"></div>
+    </div>
+</div>
 </body>
 
 
